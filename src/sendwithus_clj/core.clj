@@ -11,14 +11,15 @@
 (def swu-client-header "X-SWU-API-CLIENT")
 (def ^{:dynamic true} *swu-key* nil)
 
-(defstruct request :method :path :query :body)
+(defrecord Request [path query body])
+(defrecord Template [id locale version name subject html text])
 
 (defmacro with-send-with-us [key & body]
   `(binding [*swu-key* ~key]
      ~@body))
 
 (defn- make-uri [request]
-  (str host-base (request :path)))
+  (str host-base (:path request)))
 
 (defn- parameter-string [params]
   (join "&"
@@ -31,28 +32,50 @@
    swu-api-header *swu-key*
    swu-client-header user-agent})
 
-(defn- do-get! [request]
+(defn- do-get [request]
   (read-json (:body (http/get (make-uri request)
-              {:body (request :body)
+              {:body (:body request)
                :query-params (:query request)
                :headers (make-headers)}))))
 
-(defn- do-post! [request]
+(defn- do-post [request]
   (read-json
     (:body
       (http/post
         (make-uri request)
-        {:body
-          (parameter-string
-           (merge
-              (:query request) (assoc {} :data (json-str (request :body)))))
-         :query-params nil
+        {:body (json-str (:body request))
+         :query-params (parameter-string (:query request))
          :headers (make-headers)}))))
 
-(defn templates []
-  (do-get! "templates"))
+(defn- do-put [request]
+  (read-json
+    (:body
+      (http/put
+        (make-uri request)
+        {:body (json-str (:body request))
+         :query-params (parameter-string (:query request))
+         :headers (make-headers)}))))
+
+(defn get-templates
+  ([] (do-get (Request. "templates" nil nil)))
+  ([template-id] (do-get (Request. (str "templates/" template-id) nil nil)))
+  ([template-id locale] (do-get (Request. (str "templates/" template-id "/locales/" locale) nil nil)))
+  ([template-id locale version] (do-get (Request. (str "templates/" template-id "/locales/" locale "/versions/" version) nil nil))))
+
+(defn update-template [template]
+  (let [template-id (:id template)
+        locale (:locale template)
+        version (:version template)]
+    (do-put (Request. (str "templates/" template-id "/locales/" locale "/versions/" version) nil template))))
+
+(defn create-template [template]
+  (do-post (Request. "templates" nil template)))
+
+(defn add-locale [template]
+  (let [template-id (:id template)]
+    (do-post (Request. (str "templates/" template-id "/locales") nil template))))
 
 (defn -main [& args]
-  (with-send-with-us "some key"
-    (let [request (struct request "GET" "templates" nil nil)]
-      (println (do-get! request)))))
+  (with-send-with-us "live_4c90f69f882402aa9847d520c86ecd4f72b8a030"
+    (println
+      (add-locale (Template. "tem_B76FSNaAtKYYeqnALoBYVh" "es-US" nil "New Spanish Template" "My Spanish Subject" "<html><head><title></title></head><body>hola!</body></html>" "hola")))))
