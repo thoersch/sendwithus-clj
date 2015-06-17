@@ -53,6 +53,6 @@
   (do-get! "templates"))
 
 (defn -main [& args]
-  (with-send-with-us "live_20382f37800060a4147c0173662366ba23f00592"
+  (with-send-with-us "some key"
     (let [request (struct request "GET" "templates" nil nil)]
       (println (do-get! request)))))
