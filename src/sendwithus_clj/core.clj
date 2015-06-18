@@ -13,6 +13,7 @@
 
 (defrecord Request [path query body])
 (defrecord Template [id locale version name subject html text])
+;(defrecord Email [template-id recipient
 
 (defmacro with-send-with-us [key & body]
   `(binding [*swu-key* ~key]
@@ -74,6 +75,13 @@
 (defn add-locale [template]
   (let [template-id (:id template)]
     (do-post (Request. (str "templates/" template-id "/locales") nil template))))
+
+(defn add-version [template]
+  (let [template-id (:id template)
+        locale (:locale template)]
+    (do-post (Request. (str "templates/" template-id "/locales/" locale "/versions") nil template))))
+
+
 
 (defn -main [& args]
   (with-send-with-us "live_4c90f69f882402aa9847d520c86ecd4f72b8a030"
