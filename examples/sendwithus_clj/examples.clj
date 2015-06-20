@@ -71,3 +71,38 @@
 (with-send-with-us "api-key-here"
   (get-providers))
 ;=> [{:is_default true, :object esp_account, :id esp_3R5MA4RfoTxNW3hQ7pUoPG, :name mandrill, :esp_type mandrill, :created 1434821141}]
+
+; sets the default service provider
+(with-send-with-us "api-key-here"
+  (set-default-provider "esp_3R5MA4RfoTxNW3hQ7pUoPG"))
+;=> {:success true, :esp_account {:esp_type mandrill, :name mandrill, :id esp_3R5MA4RfoTxNW3hQ7pUoPG, :object esp_account, :created 1434821141, :is_default true}, :status OK}
+
+; gets a specific customer
+(with-send-with-us "api-key-here"
+  (get-customer "recipients@test.com"))
+;=> {:success true, :status OK, :customer {:email thoersch@gmail.com, :data {:amount $12.99}, :object customer, :groups [], :created 1434806281, :locale en-US}}
+
+; update or insert a customer
+(with-send-with-us "api-key-here"
+  (upsert-customer "recipients@test.com" {:name "Billy Somebody" :state "Wisconsin"} "en-US"))
+;=> {:success true, :status OK}
+
+; deletes a customer
+(with-send-with-us "api-key-here"
+  (delete-customer "recipients@test.com"))
+;=> {:status OK, :success true}
+
+; gets a customer's email log
+(with-send-with-us "api-key-here"
+  (get-customer-logs "recipients@test.com"))
+;=> {:status OK, :success true, :logs [{:status re_opened, :email_version Version, :object log, :created 1434806470, :message SendGrid: Recipient has opened the HTML message., :email_id tem_B76FSNaAtKYYeqnALoBYVh, :email_name New Template, :recipient_address recipients@test.com, :id log_37f0270870c138f526cace50b7615f6c, :recipient_name Billy Somebody} {:status opened, :email_version New Version, :object log, :created 1434806273, :message SendGrid: Recipient has opened the HTML message., :email_id tem_B76FSNaAtKYYeqnALoBYVh, :email_name New Template, :recipient_address recipients@test.com, :id log_2210b76c90220f4fd429a9dc650cac50, :recipient_name Billy Somebody}]}
+
+; adds a customer to group
+(with-send-with-us "api-key-here"
+  (add-customer-to-group "recipients@test.com" "grp_ynYBhuxnfRYFV3vcRvFZXQ"))
+;=> {:success true, :status OK}
+
+; removes a customer from a group
+(with-send-with-us "api-key-here"
+  (remove-customer-from-group "recipients@test.com" "grp_ynYBhuxnfRYFV3vcRvFZXQ"))
+;=> {:success true, :status OK}

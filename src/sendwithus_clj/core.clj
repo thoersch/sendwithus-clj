@@ -123,25 +123,26 @@
 (defn get-providers []
   (do-get (Request. "esp_accounts" nil nil)))
 
-(defn -main [& args]
-  (with-send-with-us "live_4c90f69f882402aa9847d520c86ecd4f72b8a030"
-    (println
-      (get-providers))))
+(defn set-default-provider [provider-id]
+  (do-put (Request. "esp_accounts/set_default" nil {:esp_id provider-id})))
 
+(defn get-customer [email]
+  (do-get (Request. (str "customers/" email) nil nil)))
 
-(comment (send-email (Email.
-                    "tem_B76FSNaAtKYYeqnALoBYVh"
-                    (Recipient. "thoersch@gmail.com" "Tyler Hoersch")
-                    [(Recipient. "cc-test1@test.com" "cc test")]
-                    [(Recipient. "bcc-test1@test.com" "bcc test")]
-                    (Sender. "swu-clj-client@gmail.com" "noreply@test.com" "SWU clj")
-                    {:amount "$12.99"}
-                    ["tag1" "tag2"]
-                    {:X-HEADER-ONE "custom header"}
-                    {:id "inline-message" :data "SGkgdGhpcyBpcyBhIG1lc3NhZ2U="}
-                    [{:id "doc.txt" :data "SGVsbG8sIHRoaXMgaXMgYSB0ZXh0IGZpbGUuCg=="}]
-                    nil
-                    "en-US"
-                    "Version"))
-)
-      ;(add-version (Template. "tem_B76FSNaAtKYYeqnALoBYVh" "ru-RU" nil "Version" "My Spanish Subject" "<html><head><title></title></head><body>hola!</body></html>" "hola")))))
+(defn upsert-customer
+  ([email] (do-post (Request. "customers" nil {:email email})))
+  ([email data] (do-post (Request. "customers" nil {:email email :data data})))
+  ([email data locale] (do-post (Request. "customers" nil {:email email :data data :locale locale}))))
+
+(defn delete-customer [email]
+  (do-delete (Request. (str "customers/" email) nil nil)))
+
+(defn get-customer-logs [email]
+  (do-get (Request. (str "customers/" email "/logs") nil nil)))
+
+(defn add-customer-to-group [email group-id]
+  (do-post (Request. (str "customers/" email "/groups/" group-id) nil nil)))
+
+(defn remove-customer-from-group [email group-id]
+  (do-delete (Request. (str "customers/" email "/groups/" group-id) nil nil)))
+
