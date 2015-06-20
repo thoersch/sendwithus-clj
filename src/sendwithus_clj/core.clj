@@ -13,7 +13,9 @@
 
 (defrecord Request [path query body])
 (defrecord Template [id locale version name subject html text])
-;(defrecord Email [template-id recipient
+(defrecord Recipient [address name])
+(defrecord Sender [address reply_to name])
+(defrecord Email [email_id recipient cc bcc sender email_data tags headers inline files esp_account locale version_name])
 
 (defmacro with-send-with-us [key & body]
   `(binding [*swu-key* ~key]
@@ -79,11 +81,46 @@
 (defn add-version [template]
   (let [template-id (:id template)
         locale (:locale template)]
-    (do-post (Request. (str "templates/" template-id "/locales/" locale "/versions") nil template))))
+  (if (empty? locale)
+    (do-post (Request. (str "templates/" template-id "/versions") nil template))
+    (do-post (Request. (str "templates/" template-id "/locales/" locale "/versions") nil template)))))
 
+(defn get-logs
+  ([] (do-get (Request. "logs" nil nil)))
+  ([log-id events?]
+    (if (false? events?)
+      (do-get (Request. (str "logs/" log-id) nil nil))
+      (do-get (Request. (str "logs/" log-id "/events") nil nil)))))
 
+(defn resend-email [log-id]
+  (do-post (Request. "resend" nil {:log_id log-id})))
+
+(defn send-email [email]
+  (do-post (Request. "send" nil email)))
+
+(defn get-snippets
+  ([] (do-get (Request. "snippets" nil nil)))
+  ([snippet-id] (do-get (Request. (str "snippets/" snippet-id) nil nil))))
 
 (defn -main [& args]
   (with-send-with-us "live_4c90f69f882402aa9847d520c86ecd4f72b8a030"
     (println
-      (add-locale (Template. "tem_B76FSNaAtKYYeqnALoBYVh" "es-US" nil "New Spanish Template" "My Spanish Subject" "<html><head><title></title></head><body>hola!</body></html>" "hola")))))
+      (get-snippets "snp_KnQzcVCU4nddskYcGSxE4m"))))
+
+
+(comment (send-email (Email.
+                    "tem_B76FSNaAtKYYeqnALoBYVh"
+                    (Recipient. "thoersch@gmail.com" "Tyler Hoersch")
+                    [(Recipient. "cc-test1@test.com" "cc test")]
+                    [(Recipient. "bcc-test1@test.com" "bcc test")]
+                    (Sender. "swu-clj-client@gmail.com" "noreply@test.com" "SWU clj")
+                    {:amount "$12.99"}
+                    ["tag1" "tag2"]
+                    {:X-HEADER-ONE "custom header"}
+                    {:id "inline-message" :data "SGkgdGhpcyBpcyBhIG1lc3NhZ2U="}
+                    [{:id "doc.txt" :data "SGVsbG8sIHRoaXMgaXMgYSB0ZXh0IGZpbGUuCg=="}]
+                    nil
+                    "en-US"
+                    "Version"))
+)
+      ;(add-version (Template. "tem_B76FSNaAtKYYeqnALoBYVh" "ru-RU" nil "Version" "My Spanish Subject" "<html><head><title></title></head><body>hola!</body></html>" "hola")))))
