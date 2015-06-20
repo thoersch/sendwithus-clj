@@ -46,3 +46,28 @@
 (with-send-with-us "api-key-here"
   (get-snippets "snp_KnQzcVCU4nddskYcGSxE4m"))
 ;=> {:created 1434808837, :name My Snippet, :object snippet, :body <div>Hello, I'm a snippet.</div>, :id snp_KnQzcVCU4nddskYcGSxE4m}
+
+; creates a snippet
+(with-send-with-us "api-key-here"
+  (create-snippet "New Snippet" "<p>My New Snippet!</p>"))
+;=> {:success true, :snippet {:name New Snippet, :created 1434811290, :id snp_hctHQMTP9tBKRqAZawmTPQ, :body <p>My New Snippet!</p>, :object snippet}, :status OK}
+
+; updates a snippet
+(with-send-with-us "api-key-here"
+  (update-snippet "snp_hctHQMTP9tBKRqAZawmTPQ" "Updated Snippet" "<p>My Updated Snippet!</p>"))
+;=> {:success true, :snippet {:name Updated Snippet, :created 1434811290, :id snp_hctHQMTP9tBKRqAZawmTPQ, :body <p>My Updated Snippet!</p>, :object snippet}, :status OK}
+
+; deletes a snippet
+(with-send-with-us "api-key-here"
+  (delete-snippet "snp_hctHQMTP9tBKRqAZawmTPQ"))
+;=> {:success true, :status OK}
+
+; renders a template
+(with-send-with-us "api-key-here"
+  (render-email (RenderRequest. "tem_B76FSNaAtKYYeqnALoBYVh" {:amount "$12.99"} "ver_3aVkkbePDvaq5L72vWmWs4" "New Version" "en-US" true)))
+;=> {:template {:id tem_B76FSNaAtKYYeqnALoBYVh, :locale en-US, :name New Template, :version_name New Version}, :success true, :subject My Subject, :status OK, :html <html><head><title></title></head><body>new!</body></html>, :text new}
+
+; gets all email service providers
+(with-send-with-us "api-key-here"
+  (get-providers))
+;=> [{:is_default true, :object esp_account, :id esp_3R5MA4RfoTxNW3hQ7pUoPG, :name mandrill, :esp_type mandrill, :created 1434821141}]

@@ -16,6 +16,7 @@
 (defrecord Recipient [address name])
 (defrecord Sender [address reply_to name])
 (defrecord Email [email_id recipient cc bcc sender email_data tags headers inline files esp_account locale version_name])
+(defrecord RenderRequest [template_id template_data version_id version_name locale strict])
 
 (defmacro with-send-with-us [key & body]
   `(binding [*swu-key* ~key]
@@ -58,6 +59,11 @@
         {:body (json-str (:body request))
          :query-params (parameter-string (:query request))
          :headers (make-headers)}))))
+
+(defn- do-delete [request]
+  (read-json
+    (:body
+      (http/delete (make-uri request) {:query-params (parameter-string (:query request)) :headers (make-headers)}))))
 
 (defn get-templates
   ([] (do-get (Request. "templates" nil nil)))
@@ -102,10 +108,25 @@
   ([] (do-get (Request. "snippets" nil nil)))
   ([snippet-id] (do-get (Request. (str "snippets/" snippet-id) nil nil))))
 
+(defn create-snippet [name body]
+  (do-post (Request. "snippets" nil {:name name :body body})))
+
+(defn update-snippet [snippet-id name body]
+  (do-put (Request. (str "snippets/" snippet-id) nil {:name name :body body})))
+
+(defn delete-snippet [snippet-id]
+  (do-delete (Request. (str "snippets/" snippet-id) nil nil)))
+
+(defn render-email [render-options]
+  (do-post (Request. "render" nil render-options)))
+
+(defn get-providers []
+  (do-get (Request. "esp_accounts" nil nil)))
+
 (defn -main [& args]
   (with-send-with-us "live_4c90f69f882402aa9847d520c86ecd4f72b8a030"
     (println
-      (get-snippets "snp_KnQzcVCU4nddskYcGSxE4m"))))
+      (get-providers))))
 
 
 (comment (send-email (Email.
