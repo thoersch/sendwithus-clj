@@ -106,7 +106,7 @@
 
 (defn get-logs
   "Gets all logs - no args
-   Gets specific logs - [log-id show-events(optional)]"
+   Gets specific logs - [log-id show-events(true/false)]"
   ([] (do-get (Request. "logs" nil nil)))
   ([log-id events?]
     (if (false? events?)

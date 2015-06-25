@@ -73,6 +73,73 @@ These can be used directly with the library:
 ;=> {:success true, :status OK, :receipt_id log_37f0270870c138f526cace50b7615f6c, :email {:locale en-US, :version_name Version, :name My Template}}
 ```
 
+###Email interactions:
+
+- (send-email [email]) note: uses the Email. record
+- (resend-email [log-id])
+- (batch-send [emails]) note: uses a vector of Email. records
+
+###Template interactions:
+
+- (get-templates [])
+- (get-templates [template-id])
+- (get-templates [template-id locale])
+- (get-templates [template-id locale version])
+- (update-template [template]) note: uses the Template. record
+- (create-template [template]) note: uses the Template. record
+- (add-locale [template]) note: uses the Template. record
+- (add-version [template]) note: uses the Template. record with optional locale
+
+###Logs interactions:
+
+- (get-logs [])
+- (get-logs [log-id events?])
+
+###Snippets interactions:
+
+- (get-snippets [])
+- (get-snippets [snippet-id])
+- (create-snippet [name body])
+- (update-snippet [snippet-id name body])
+- (delete-snippet [snippet-id])
+
+###Email service provider interactions:
+
+- (get-providers [])
+- (set-default-provider [provider-id])
+
+###Customer interactions:
+
+- (get-customers [email])
+- (get-customer-logs [email])
+- (upsert-customer [email])
+- (upsert-customer [email email-data])
+- (upsert-customer [email email-data locale])
+- (delete-customer [email])
+- (add-customer-to-group [email group-id])
+- (remove-customer-from-group [email group-id])
+- (remove-customer-from-campaigns [email])
+- (remove-customer-from-campaigns [email campaign-id])
+
+###Campaign interactions:
+
+- (add-customer-to-campaign [drip-campaign]) note: this uses the DripCampaign. record
+- (get-drip-campaigns [])
+- (get-drip-campaigns [drip-campaign-id])
+
+###Segment interactions:
+
+- (get-segments [])
+- (send-to-segment [segment-id template-id email-data])
+
+
+###Group interactions:
+
+- (get-groups [])
+- (create-group [name description])
+- (update-group [group-id name description])
+- (delete-group [group-id])
+
 ## Examples
 
 All api examples can be found in the sendwithus-clj.examples namespace
