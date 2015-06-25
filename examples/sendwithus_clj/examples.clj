@@ -106,3 +106,112 @@
 (with-send-with-us "api-key-here"
   (remove-customer-from-group "recipients@test.com" "grp_ynYBhuxnfRYFV3vcRvFZXQ"))
 ;=> {:success true, :status OK}
+
+; gets all drip campaigns
+(with-send-with-us "api-key-here"
+  (get-drip-campaigns))
+;=> [{:enabled false, :id dc_HNiKwoKo44UnVnhf9iBmHX, :name My Campaign, :trigger_email_id nil, :drip_steps [{:delay_seconds 604800, :id dcs_TXb27jmMpSv9V3497iHdaL, :email_id tem_B76FSNaAtKYYeqnALoBYVh, :object drip_step}], :object drip_campaign}]
+
+; gets a specific drip campaign
+(with-send-with-us "api-key-here"
+  (get-drip-campaigns "dc_HNiKwoKo44UnVnhf9iBmHX"))
+;=> {:drip_steps [{:email_id tem_B76FSNaAtKYYeqnALoBYVh, :object drip_step, :delay_seconds 604800, :id dcs_TXb27jmMpSv9V3497iHdaL}], :enabled false, :object drip_campaign, :name My Campaign, :id dc_HNiKwoKo44UnVnhf9iBmHX, :trigger_email_id nil}
+
+; removes email from all drip campaigns
+(with-send-with-us "api-key-here"
+  (remove-customer-from-campaigns "recipients@test.com"))
+;=> {:success true, :status OK, :recipient_address recipients@test.com}
+
+; removes email from specific drip campaign
+(with-send-with-us "api-key-here"
+  (remove-customer-from-campaigns "recipients@test.com" "dc_HNiKwoKo44UnVnhf9iBmHX"))
+;=> {:success true, :status OK, :drip_campaign {:name My Campaign, :id dc_HNiKwoKo44UnVnhf9iBmHX}, :message Recipient successfully removed from drip campaign., :recipient_address recipients@test.com}
+
+; adds a customer to a specific drip campaign
+(with-send-with-us "api-key-here"
+  (add-customer-to-campaign (DripCampaign. "dc_HNiKwoKo44UnVnhf9iBmHX"
+                              (Recipient. "recipients@test.com" "Billy Somebody")
+                              [(Recipient. "cc-test1@test.com" "cc test")]
+                              [(Recipient. "bcc-test1@test.com" "bcc test")]
+                              (Sender. "swu-clj-client@gmail.com" "noreply@test.com" "SWU clj")
+                              {:amount "$12.99"}
+                              ["tag1" "tag2"]
+                              "esp_1a2b3c4d5e"
+                              "en-US")))
+;=> {:success true, :status OK, :drip_campaign {:name My Campaign, :id dc_HNiKwoKo44UnVnhf9iBmHX}, :message Recipient successfully added to drip campaign., :recipient_address recipients@test.com}
+
+; gets all segments
+(with-send-with-us "api-key-here"
+  (get-segments))
+;=> [{:created 1434572374, :id seg_9KAgTPqo5PybwJXTmNCp2H, :name Clicks - Last 30 Days, :object segment} {:created 1434572374, :id seg_wPjBETrofN8TFutqPGFHCD, :name Opens - Last 7 Days, :object segment} {:created 1434572374, :id seg_4DE3YwfPNRQBUtB7Xenx9k, :name All Customers, :object segment}]
+
+; send to segment
+(with-send-with-us "api-key-here"
+  (send-to-segement "seg_4DE3YwfPNRQBUtB7Xenx9k" "tem_B76FSNaAtKYYeqnALoBYVh" {:amount "$12.99"}))
+;=> {:success true, :status OK}
+
+; create a group
+(with-send-with-us "api-key-here"
+  (create-group "My Group" "This is my awesome group"))
+;=> {:group {:description This is my awesome group, :id grp_VjZdRPpky6W2icXM4ufNiG, :name My Group}, :status OK, :success true}
+
+; get all groups
+(with-send-with-us "api-key-here"
+  (get-groups))
+;=> {:groups [{:description This is my awesome group, :id grp_VjZdRPpky6W2icXM4ufNiG, :name My Group} {:description , :id grp_ynYBhuxnfRYFV3vcRvFZXQ, :name My Test Group}], :status OK, :success true}
+
+; update a specific group
+(with-send-with-us "api-key-here"
+  (update-group "grp_VjZdRPpky6W2icXM4ufNiG" "New Group Name" "New Description"))
+;=> {:group {:description New Description, :id grp_VjZdRPpky6W2icXM4ufNiG, :name New Group Name}, :status OK, :success true}
+
+; delete a group
+(with-send-with-us "api-key-here"
+  (delete-group "grp_VjZdRPpky6W2icXM4ufNiG"))
+;=> {:success true, :status OK}
+
+; send emails in a batch request
+(with-send-with-us "api-key-here"
+  (batch-send [(Email.
+                 "tem_B76FSNaAtKYYeqnALoBYVh"
+                 (Recipient. "test1@test.com" "recipient test")
+                 [(Recipient. "cc-test1@test.com" "cc test")]
+                 [(Recipient. "bcc-test1@test.com" "bcc test")]
+                 (Sender. "swu-clj-client@test.com" "noreply@test.com" "SWU clj")
+                 {:amount "$12.99"}
+                 ["tag1" "tag2"]
+                 {:X-HEADER-ONE "custom header"}
+                 {:id "inline-message" :data "SGkgdGhpcyBpcyBhIG1lc3NhZ2U="}
+                 [{:id "doc.txt" :data "SGVsbG8sIHRoaXMgaXMgYSB0ZXh0IGZpbGUuCg=="}]
+                 "esp_1a2b3c4d5e"
+                 "en-US"
+                 "Version")
+               (Email.
+                 "tem_B76FSNaAtKYYeqnALoBYVh"
+                 (Recipient. "test2@test.com" "recipient 2 test")
+                 [(Recipient. "cc-test1@test.com" "cc test")]
+                 [(Recipient. "bcc-test1@test.com" "bcc test")]
+                 (Sender. "swu-clj-client@test.com" "noreply@test.com" "SWU clj")
+                 {:amount "$12.99"}
+                 ["tag1" "tag2"]
+                 {:X-HEADER-ONE "custom header"}
+                 {:id "inline-message" :data "SGkgdGhpcyBpcyBhIG1lc3NhZ2U="}
+                 [{:id "doc.txt" :data "SGVsbG8sIHRoaXMgaXMgYSB0ZXh0IGZpbGUuCg=="}]
+                 "esp_1a2b3c4d5e"
+                 "en-US"
+                 "Version")
+               (Email.
+                 "tem_B76FSNaAtKYYeqnALoBYVh"
+                 (Recipient. "test3@test.com" "recipient 3 test")
+                 [(Recipient. "cc-test1@test.com" "cc test")]
+                 [(Recipient. "bcc-test1@test.com" "bcc test")]
+                 (Sender. "swu-clj-client@test.com" "noreply@test.com" "SWU clj")
+                 {:amount "$12.99"}
+                 ["tag1" "tag2"]
+                 {:X-HEADER-ONE "custom header"}
+                 {:id "inline-message" :data "SGkgdGhpcyBpcyBhIG1lc3NhZ2U="}
+                 [{:id "doc.txt" :data "SGVsbG8sIHRoaXMgaXMgYSB0ZXh0IGZpbGUuCg=="}]
+                 "esp_1a2b3c4d5e"
+                 "en-US"
+                 "Version")]))
+;=> [{:body {:status OK, :email {:locale en-US, :name New Template, :version_name Version}, :receipt_id log_48461b16159187effff3ef83f19c6c2a, :success true}, :method POST, :status_code 200, :path /api/v1/send} {:body {:status OK, :email {:locale en-US, :name New Template, :version_name Version}, :receipt_id log_9c81a1214c219e50bb89f90b937b1625, :success true}, :method POST, :status_code 200, :path /api/v1/send} {:body {:status OK, :email {:locale en-US, :name New Template, :version_name Version}, :receipt_id log_e13886982e4784ff38953a29e2209a37, :success true}, :method POST, :status_code 200, :path /api/v1/send}]
