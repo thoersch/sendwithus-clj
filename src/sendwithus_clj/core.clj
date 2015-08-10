@@ -2,8 +2,7 @@
   (:require
    [clj-http.client :as http])
   (:use [clojure.data.json :only [json-str read-json]]
-        [clojure.string :only [join]])
-  :gen-class)
+        [clojure.string :only [join]]))
 
 (def client-version 0.1)
 (def user-agent (format "clojure-%f" client-version))
