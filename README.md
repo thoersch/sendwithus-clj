@@ -8,19 +8,19 @@ This library provides a easy to use interface for integrating the sendwithus for
 The sendwithus-clj library can be installed as a dependency from [Clojars](https://clojars.org/sendwithus-clj)
 
 ```el
-    [sendwithus-clj "1.0.0-SNAPSHOT"]
+    [sendwithus-clj "1.0.0"]
 ```
 
 Or gradle
 
-    compile "sendwithus-clj:sendwithus-clj:1.0.0-SNAPSHOT"
+    compile "sendwithus-clj:sendwithus-clj:1.0.0"
 
 Or maven
 
     <dependency>
       <groupId>sendwithus-clj</groupId>
       <artifactId>sendwithus-clj</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency
 
 ## Usage
