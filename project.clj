@@ -1,4 +1,4 @@
-(defproject sendwithus-clj "1.0.0"
+(defproject sendwithus-clj "1.0.1"
   :description "Clojure SDK for SendWithUs API"
   :url "https://github.com/thoersch/sendwithus-clj"
   :scm {:name "git"
