@@ -73,13 +73,13 @@ These can be used directly with the library:
 ;=> {:success true, :status OK, :receipt_id log_37f0270870c138f526cace50b7615f6c, :email {:locale en-US, :version_name Version, :name My Template}}
 ```
 
-###Email interactions:
+### Email interactions
 
 - (send-email [email]) note: uses the Email. record
 - (resend-email [log-id])
 - (batch-send [emails]) note: uses a vector of Email. records
 
-###Template interactions:
+### Template interactions
 
 - (get-templates [])
 - (get-templates [template-id])
@@ -90,12 +90,12 @@ These can be used directly with the library:
 - (add-locale [template]) note: uses the Template. record
 - (add-version [template]) note: uses the Template. record with optional locale
 
-###Logs interactions:
+### Logs interactions
 
 - (get-logs [])
 - (get-logs [log-id events?])
 
-###Snippets interactions:
+### Snippets interactions
 
 - (get-snippets [])
 - (get-snippets [snippet-id])
@@ -103,12 +103,12 @@ These can be used directly with the library:
 - (update-snippet [snippet-id name body])
 - (delete-snippet [snippet-id])
 
-###Email service provider interactions:
+### Email service provider interactions
 
 - (get-providers [])
 - (set-default-provider [provider-id])
 
-###Customer interactions:
+### Customer interactions
 
 - (get-customers [email])
 - (get-customer-logs [email])
@@ -121,19 +121,18 @@ These can be used directly with the library:
 - (remove-customer-from-campaigns [email])
 - (remove-customer-from-campaigns [email campaign-id])
 
-###Campaign interactions:
+### Campaign interactions
 
 - (add-customer-to-campaign [drip-campaign]) note: this uses the DripCampaign. record
 - (get-drip-campaigns [])
 - (get-drip-campaigns [drip-campaign-id])
 
-###Segment interactions:
+### Segment interactions
 
 - (get-segments [])
 - (send-to-segment [segment-id template-id email-data])
 
-
-###Group interactions:
+### Group interactions
 
 - (get-groups [])
 - (create-group [name description])
